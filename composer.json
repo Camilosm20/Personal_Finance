@@ -1,0 +1,13 @@
+{
+    "name": "user/personal_finance",
+    "description": "Project of practice connection with DB of MySQL with PHP",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Camilosm20",
+            "email": "madridcamilo606@gmail.com"
+        }
+    ],
+    "require": {}
+}
