@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-class IncomesController{
+class WithdrawalsController{
     
     public function index(){//muestra lista de recursos
 
@@ -47,6 +47,5 @@ class IncomesController{
     }
 
 }
-
 
 ?>
