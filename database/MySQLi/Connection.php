@@ -1,21 +1,49 @@
 <?php
 
-$server = "localhost";
-$database = "finanzas_personales";
-$username = "root";
-$password = "";
+namespace Database\MySQLi;
 
-//Forma orientada a Objetos
-$mysqli = new mysqli($server, $username, "", $database);
+class Connection{
+    
+    private static $instance;
+    private $connection;
 
-if ($mysqli->connect_errno) {
-    die("Fallo la conexion: {$mysqli->connect_error}");
-};
+    private function __construct(){
+        $this->make_connection();
+    }
 
-//esto nos ayuda a poder usar cualquier caracter en nuestras consultas
-$setnames = $mysqli->prepare("SET NAMES utf8");
-$setnames->execute();
+    public static function getInstance()
+    {
+        if (!self::$instance instanceof self) 
+            self::$instance = new self();
+        
+        return self::$instance;
 
-var_dump($setnames);
+    }
 
+    public static function get_database_instance()
+    {
+        return $this->connection;
+    }
+
+    private function make_connection()
+    {
+        $server = "localhost";
+        $database = "finanzas_personales";
+        $username = "root";
+        $password = "";
+
+        //Forma orientada a Objetos
+        $mysqli = new \mysqli($server, $username, "", $database);
+
+        if ($mysqli->connect_errno) {
+            die("Fallo la conexion: {$mysqli->connect_error}");
+        };
+
+        //esto nos ayuda a poder usar cualquier caracter en nuestras consultas
+        $setnames = $mysqli->prepare("SET NAMES utf8");
+        $setnames->execute();
+        
+        $this->connection = $mysqli;
+    }
+}
 ?>
