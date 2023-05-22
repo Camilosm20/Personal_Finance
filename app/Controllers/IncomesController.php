@@ -2,76 +2,92 @@
 
 namespace App\Controllers;
 
-use Database\MySQLi\Connection;
+use Database\PDO\Connection;
 
-class IncomesController{
-    
+class IncomesController {
+
     private $connection;
 
     public function __construct() {
         $this->connection = Connection::getInstance()->get_database_instance();
     }
-    
-    public function index(){//muestra lista de recursos
+
+    /**
+     * Muestra una lista de este recurso
+     */
+    public function index() {
 
         $stmt = $this->connection->prepare("SELECT * FROM incomes");
         $stmt->execute();
 
-        $results = $stmt->fetchAll();
+        $stmt->bindColumn("amount", $amount);
+        $stmt->bindColumn("description", $description);
 
-        foreach($results as $result)
-            echo "Gastaste " . $result["amount"] . " USD en: " . $result["description"] . "\n";
-
-    }
-
-    public function create(){//muestra un formulario para crear un recurso
-
-
+        while($stmt->fetch())
+            echo "Ganaste $amount USD en: $description \n";
 
     }
 
-    public function store($data){//guarda un recurso en la base de datos
+    /**
+     * Muestra un formulario para crear un nuevo recurso
+     */
+    public function create() {}
 
-        $connection = Connection::getInstance()->get_database_instance();
+    /**
+     * Guarda un nuevo recurso en la base de datos
+     */
+    public function store($data) {
 
-        $stmt= $connection->prepare("INSERT INTO incomes (payment_method, type, date, amount, description) VALUES(?,?,?,?,?);");
+        $stmt = $this->connection->prepare("INSERT INTO incomes (payment_method, type, date, amount, description) VALUES (:payment_method, :type, :date, :amount, :description)");
 
-        $stmt->bind_param("iisds", $payment_method, $type, $date, $amount, $description);
-
-        $payment_method = $data['payment_method'];
-        $type = $data['type'];
-        $date = $data['date'];
-        $amount = $data['amount'];
-        $description = $data['description'];
+        $stmt->bindValue(":payment_method", $data["payment_method"]);
+        $stmt->bindValue(":type", $data["type"]);
+        $stmt->bindValue(":date", $data["date"]);
+        $stmt->bindValue(":amount", $data["amount"]);
+        $stmt->bindValue(":description", $data["description"]);
 
         $stmt->execute();
-    }
-
-    public function show(){//muestra un recurso
-
-
 
     }
 
-    public function edit(){//muestra un unico formulario para editar un recurso
+    /**
+     * Muestra un único recurso especificado
+     */
+    public function show() {}
 
+    /**
+     * Muestra el formulario para editar un recurso
+     */
+    public function edit() {}
+
+    /**
+     * Actualiza un recurso específico en la base de datos
+     */
+    public function update() {}
+
+    /**
+     * Elimina un recurso específico de la base de datos
+     */
+    public function destroy($id) {
+
+        $this->connection->beginTransaction();
+
+        // Esto no funciona en MySQL
+        // $this->connection->exec("DROP TABLE incomes_test");
+
+        $stmt = $this->connection->prepare("DELETE FROM incomes WHERE id = :id");
+        $stmt->execute([
+            ":id" => $id
+        ]);
+
+        $sure = readline("¿De verdad quieres eliminar este registro? ");
+
+        if ($sure == "no")
+            $this->connection->rollBack();
+        else
+            $this->connection->commit();
 
 
     }
-
-    public function update(){//actualiza un recurso en la base de datos
-
-
-
-    }
-
-    public function destroy(){//elimina un recurso de la base de datos
-
-
-
-    }
-
+    
 }
-
-
-?>

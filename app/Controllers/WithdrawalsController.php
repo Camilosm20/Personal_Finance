@@ -2,17 +2,20 @@
 
 namespace App\Controllers;
 
-use Database\MySQLi\Connection;
+use Database\PDO\Connection;
 
-class WithdrawalsController{
+class WithdrawalsController {
 
     private $connection;
 
     public function __construct() {
         $this->connection = Connection::getInstance()->get_database_instance();
     }
-    
-    public function index(){//muestra lista de recursos
+
+    /**
+     * Muestra una lista de este recurso
+     */
+    public function index() {
 
         $stmt = $this->connection->prepare("SELECT * FROM withdrawals");
         $stmt->execute();
@@ -22,44 +25,71 @@ class WithdrawalsController{
         foreach($results as $result)
             echo "Gastaste " . $result["amount"] . " USD en: " . $result["description"] . "\n";
 
-    }
+        // Esto es usanfo Fetch Column
 
-    public function create(){//muestra un formulario para crear un recurso
+        /* $stmt = $this->connection->prepare("SELECT amount, description FROM withdrawals");
+        $stmt->execute();
 
+        $results = $stmt->fetchAll(\PDO::FETCH_COLUMN, 0);
 
-
-    }
-
-    public function store(){//guarda un recurso en la base de datos
-
-
+        foreach($results as $result)
+            echo "Gastaste $result USD \n"; */
 
     }
 
-    public function show(){//muestra un recurso
+    /**
+     * Muestra un formulario para crear un nuevo recurso
+     */
+    public function create() {}
 
+    /**
+     * Guarda un nuevo recurso en la base de datos
+     */
+    public function store($data) {
 
+        $stmt = $this->connection->prepare("INSERT INTO withdrawals (payment_method, type, date, amount, description) VALUES (:payment_method, :type, :date, :amount, :description)");
+
+        $stmt->bindValue(":payment_method", $data["payment_method"]);
+        $stmt->bindValue(":type", $data["type"]);
+        $stmt->bindValue(":date", $data["date"]);
+        $stmt->bindValue(":amount", $data["amount"]);
+        $stmt->bindValue(":description", $data["description"]);
+
+        $data["description"] = "Compré cosas para mí";
+
+        $stmt->execute();
 
     }
 
-    public function edit(){//muestra un unico formulario para editar un recurso
+    /**
+     * Muestra un único recurso especificado
+     */
+    public function show($id) {
 
+        $stmt = $this->connection->prepare("SELECT * FROM withdrawals WHERE id=:id");
+        $stmt->execute([
+            ":id" => $id
+        ]);
 
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-    }
-
-    public function update(){//actualiza un recurso en la base de datos
-
-
-
-    }
-
-    public function destroy(){//elimina un recurso de la base de datos
-
-
+        echo "El registro con id $id dice que te gastaste {$result['amount']} USD en {$result['description']}";
 
     }
 
+    /**
+     * Muestra el formulario para editar un recurso
+     */
+    public function edit() {}
+
+    /**
+     * Actualiza un recurso específico en la base de datos
+     */
+    public function update() {}
+
+    /**
+     * Elimina un recurso específico de la base de datos
+     */
+    public function destroy() {}
+    
 }
-
-?>
