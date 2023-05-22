@@ -27,5 +27,13 @@ $incomes_controller = new IncomesController();
 //     "description" => "Esto es una primera prueba."
 // ]);
 
-$withdrawal_controller->show(1);
+// $withdrawal_controller->index();
+
+// $withdrawal_controller->show(1);
+
+// $incomes_controller->index();
+
+// $incomes_controller->destroy(2);
+
+
 ?>
