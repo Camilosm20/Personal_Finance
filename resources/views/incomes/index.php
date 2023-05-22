@@ -37,7 +37,7 @@
     
     </table>
 
-    <a class="button-link" href="/incomes/create">Agregar nuevo ingreso</a>
+    <a class="button-link" href="/PERSONAL_FINANCE/public/incomes/create">Agregar nuevo ingreso</a>
     
 </main>
 
