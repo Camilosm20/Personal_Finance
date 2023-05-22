@@ -1,28 +1,46 @@
 <?php
 
-    require("../vendor/autoload.php");
+require("../vendor/autoload.php");
 
-    $slug = $_GET["slug"] ?? "";
+use App\Controllers\IncomesController;
+use App\Controllers\WithdrawalsController;
+use Router\RouterHandler;
 
-    $slug = explode("/", $slug);
+// Obtener la URL
+$slug = $_GET["slug"] ?? "";
+$slug = explode("/", $slug);
 
-    $resource = $slug[0] == "" ? "/" : $slug[0];
-    $id = $slug[1] ?? null;
+$resource = $slug[0] == "" ? "/" : $slug[0];
+$id = $slug[1] ?? null;
 
-    switch ($resource) {
-        case '/':
-            echo "estas en la raiz";
-            break;
-        case 'incomes':
-            echo "estas en incomes";
-            break;
-        case 'withdrawals':
-            echo "estas en withdrawals";
-            break;
+$router = new RouterHandler();
+
+switch ($resource) {
+
+    case '/':
+        echo "Estás en la front page";
+        break;
+
+    case "incomes":
         
-        default:
-            echo "404";
-            break;
-    }
+        $method = $_POST["method"] ?? "get";
+        $router->set_method($method);
+        $router->set_data($_POST);
+        $router->route(IncomesController::class, $id);
 
-?>
+        break;
+
+    case "withdrawals":
+        
+        $method = $_POST["method"] ?? "get";
+        $router->set_method($method);
+        $router->set_data($_POST);
+        $router->route(WithdrawalsController::class, $id);
+
+        break;
+    
+    default:
+        echo "404 Not Found";
+        break;
+
+}
