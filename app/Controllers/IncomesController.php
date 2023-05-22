@@ -6,9 +6,21 @@ use Database\MySQLi\Connection;
 
 class IncomesController{
     
+    private $connection;
+
+    public function __construct() {
+        $this->connection = Connection::getInstance()->get_database_instance();
+    }
+    
     public function index(){//muestra lista de recursos
 
-        
+        $stmt = $this->connection->prepare("SELECT * FROM incomes");
+        $stmt->execute();
+
+        $results = $stmt->fetchAll();
+
+        foreach($results as $result)
+            echo "Gastaste " . $result["amount"] . " USD en: " . $result["description"] . "\n";
 
     }
 
@@ -22,14 +34,17 @@ class IncomesController{
 
         $connection = Connection::getInstance()->get_database_instance();
 
-        $connection->query("INSERT INTO incomes (payment_method, type, date, amount, description) VALUES(
-            {$data['payment_method']},
-            {$data['type']},
-            '{$data['date']}',
-            {$data['amount']},
-            '{$data['description']}'
-        );");
+        $stmt= $connection->prepare("INSERT INTO incomes (payment_method, type, date, amount, description) VALUES(?,?,?,?,?);");
 
+        $stmt->bind_param("iisds", $payment_method, $type, $date, $amount, $description);
+
+        $payment_method = $data['payment_method'];
+        $type = $data['type'];
+        $date = $data['date'];
+        $amount = $data['amount'];
+        $description = $data['description'];
+
+        $stmt->execute();
     }
 
     public function show(){//muestra un recurso
